@@ -35,6 +35,45 @@
             text-align: center;
             border: 1px solid var(--border-color);
         }
+
+        /* Admin Mobile Sidebar Overrides */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: block !important;
+                /* Override current CSS hiding it */
+                position: fixed;
+                top: var(--header-height);
+                left: 0;
+                bottom: 0;
+                width: 260px;
+                background: var(--card-bg);
+                z-index: 999;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-right: 1px solid var(--border-color);
+                box-shadow: var(--shadow-lg);
+                padding-top: 20px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .overlay-bg {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+            }
+
+            .overlay-bg.active {
+                display: block;
+            }
+        }
     </style>
 </head>
 
@@ -53,8 +92,8 @@
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Login to
                     Dashboard</button>
-                <p id="login-error" style="color: red; margin-top: 10px; font-size: 0.9rem; display: none;">Invalid
-                    credentials</p>
+                <p id="login-error" style="color: #ef4444; margin-top: 10px; font-size: 0.9rem; display: none;">Invalid
+                    credentials (try admin/admin)</p>
             </form>
             <div style="margin-top: 20px;">
                 <a href="index.html" style="font-size: 0.9rem; color: var(--text-muted);">Back to Portal</a>
@@ -64,20 +103,27 @@
 
     <!-- Admin Dashboard -->
     <div id="admin-dashboard" style="display: none;">
+        <div id="mobile-overlay" class="overlay-bg" onclick="toggleAdminSidebar()"></div>
+
         <header class="header">
             <div class="container">
-                <div class="logo">
-                    <ion-icon name="shield-checkmark-outline"></ion-icon> Administration
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="mobile-menu-btn" onclick="toggleAdminSidebar()"
+                        style="display: none; font-size: 1.8rem;">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <div class="logo">
+                        <ion-icon name="shield-checkmark-outline"></ion-icon> Administration
+                    </div>
                 </div>
+
                 <div style="display: flex; gap: 15px; align-items: center;">
-                    <div style="text-align: right; line-height: 1.2;">
+                    <div style="text-align: right; line-height: 1.2; display: none; sm:display: block;">
                         <span style="font-size: 0.9rem; font-weight: 600; display: block;">System Admin</span>
                         <span style="font-size: 0.75rem; color: var(--secondary-color);">Logged In</span>
                     </div>
-                    <button onclick="Auth.logout()" class="btn btn-outline"
-                        style="padding: 6px 14px; font-size: 0.8rem;">Logout</button>
-                    <a href="index.html" target="_blank" class="btn btn-primary"
-                        style="padding: 6px 14px; font-size: 0.8rem;">
+                    <button onclick="Auth.logout()" class="btn btn-outline btn-sm">Logout</button>
+                    <a href="index.html" target="_blank" class="btn btn-primary btn-sm">
                         View Live Site
                     </a>
                 </div>
@@ -85,28 +131,28 @@
         </header>
 
         <div class="admin-layout container" style="margin-top: 30px; margin-bottom: 30px;">
-            <aside class="sidebar" style="border-radius: var(--radius-md); height: fit-content;">
+            <aside class="sidebar" id="adminSidebar">
                 <div
                     style="margin-bottom: 20px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">
                     Menu</div>
                 <div class="sidebar-menu">
-                    <div class="menu-item active" onclick="showTab('dashboard')">
+                    <div class="menu-item active" onclick="showTab('dashboard'); toggleAdminSidebar()">
                         <ion-icon name="grid-outline"></ion-icon> Overview
                     </div>
-                    <div class="menu-item" onclick="showTab('add-material')">
+                    <div class="menu-item" onclick="showTab('add-material'); toggleAdminSidebar()">
                         <ion-icon name="add-circle-outline"></ion-icon> Add New Resource
                     </div>
-                    <div class="menu-item" onclick="showTab('manage-material')">
-                        <ion-icon name="list-outline"></ion-icon> content Management
+                    <div class="menu-item" onclick="showTab('manage-material'); toggleAdminSidebar()">
+                        <ion-icon name="list-outline"></ion-icon> Manage Content
                     </div>
                 </div>
             </aside>
 
-            <main class="admin-content">
+            <main class="admin-content" style="padding: 0;">
 
                 <!-- Dashboard Tab -->
                 <div id="tab-dashboard">
-                    <h2 class="section-title" style="text-align: left; left: 0; transform: none; margin-bottom: 20px;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">
                         System Overview</h2>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -140,11 +186,12 @@
 
                 <!-- Add Material Tab -->
                 <div id="tab-add-material" style="display: none;">
-                    <h2 class="section-title" style="text-align: left; left: 0; transform: none; margin-bottom: 20px;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">
                         Upload New Resource</h2>
                     <div class="card" style="text-align: left; max-width: 800px; cursor: default;">
                         <form id="add-form">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                                 <div class="form-group">
                                     <label class="form-label">Resource Title</label>
                                     <input type="text" id="m-title" class="form-control"
@@ -157,7 +204,8 @@
                                 </div>
                             </div>
 
-                            <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group"
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                                 <div>
                                     <label class="form-label">Semester</label>
                                     <select id="m-sem" class="form-control" required>
@@ -195,7 +243,8 @@
                                     placeholder="e.g. Covers Unit 1 & 2 fully." required>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                                 <div class="form-group">
                                     <label class="form-label">File Size (e.g. 2.5 MB)</label>
                                     <input type="text" id="m-size" class="form-control">
@@ -228,7 +277,7 @@
 
                 <!-- Manage Material Tab -->
                 <div id="tab-manage-material" style="display: none;">
-                    <h2 class="section-title" style="text-align: left; left: 0; transform: none; margin-bottom: 20px;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">
                         Manage Content</h2>
                     <div id="manage-list" class="material-list">
                         <!-- JS populated -->
@@ -248,7 +297,7 @@
 
         if (Auth.isAuthenticated()) {
             loginScreen.style.display = 'none';
-            dashboard.style.display = 'block'; // Fixed lint error
+            dashboard.style.display = 'block';
             initDashboard();
         }
 
@@ -263,7 +312,23 @@
             }
         });
 
-        // Dashboard Logic
+        function toggleAdminSidebar() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('adminSidebar').classList.toggle('active');
+                document.getElementById('mobile-overlay').classList.toggle('active');
+            }
+        }
+
+        // Ensure menu button shows on mobile
+        if (window.innerWidth <= 768) {
+            document.querySelector('.mobile-menu-btn').style.display = 'block';
+        }
+        window.addEventListener('resize', () => {
+            document.querySelector('.mobile-menu-btn').style.display = window.innerWidth <= 768 ? 'block' : 'none';
+        });
+
+
+        // Dashboard Logic & Form Handlers (Kept same as before)
         function initDashboard() {
             updateStats();
             renderAdminLists();
@@ -392,7 +457,6 @@
             if (tabName == 'dashboard') document.querySelectorAll('.menu-item')[0].classList.add('active');
             if (tabName == 'add-material') {
                 document.querySelectorAll('.menu-item')[1].classList.add('active');
-                // Only reset if we are not editing (check hidden id)
                 const editingId = document.getElementById('m-id').value;
                 if (!editingId && tabName === 'add-material') resetForm();
             }
