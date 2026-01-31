@@ -46,19 +46,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const newTheme = current === 'dark' ? 'light' : 'dark';
-
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('gtu_theme', newTheme);
-
-    updateIcon(newTheme);
-}
-
-function updateIcon(theme) {
-    const icon = document.querySelector('#theme-toggle ion-icon');
-    if (icon) {
-        icon.setAttribute('name', theme === 'dark' ? 'sunny-outline' : 'moon-outline');
-    }
-}
