@@ -30,7 +30,7 @@
                 GS STUDY POINT
             </a>
 
-            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle navigation">
+            <button class="mobile-menu-btn" aria-label="Toggle navigation">
                 <ion-icon name="menu-outline"></ion-icon>
             </button>
 
@@ -113,19 +113,7 @@
     <script src="js/data.js"></script>
 
 
-    <script>
-        function toggleMenu() {
-            const nav = document.getElementById('navLinks');
-            nav.classList.toggle('active');
-
-            const icon = document.querySelector('.mobile-menu-btn ion-icon');
-            if (nav.classList.contains('active')) {
-                icon.setAttribute('name', 'close-outline');
-            } else {
-                icon.setAttribute('name', 'menu-outline');
-            }
-        }
-    </script>
+    <script src="js/menu.js"></script>
 </body>
 
 </html>
