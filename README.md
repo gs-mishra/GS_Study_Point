@@ -19,8 +19,8 @@ This is a static web application. You do not need any backend server.
 
 ## Admin Credentials
 To access the Admin Panel (`admin.html` or click "Admin Login"):
-- **Username**: `admin`
-- **Password**: `admin123`
+- **Username**:
+- **Password**: 
 
 ## Technology Stack
 - **Frontend**: HTML5, CSS3 (Variables, Flexbox/Grid), JavaScript (ES6+).
