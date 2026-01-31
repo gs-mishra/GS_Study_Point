@@ -743,10 +743,10 @@ input:checked+.slider:before {
     }
 
     .section-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
 
     .hero h1 {
-        font-size: 2rem;
+        font-size: 1.7rem;
     }
 }
